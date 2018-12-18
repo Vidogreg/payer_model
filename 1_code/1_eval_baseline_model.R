@@ -18,7 +18,10 @@ PROJECT_DIR <- file.path(
 # ------------
 ## Imports
 source('1_code/00_utils.R')
-if(!exists('dfSample')) source('1_code/0_load_data.R')
+if(!exists('dfSample'))
+  dfSample <- data.table(readRDS(file.path(
+    '2_pipeline', '0_load_data', 'out', 'dataset_v0_sample_seed_1.rds'
+  )))
 
 packageTest('data.table')
 packageTest('caret')
@@ -46,7 +49,8 @@ DT <- dfSample[
   , .(
     player_id,
     y_pred = as.factor(dx_payer),
-    y_real = as.factor(dy_payer))
+    y_real = as.factor(dy_payer)
+  )
 ]
 DT[, loss := as.numeric(y_pred != y_real)]
 

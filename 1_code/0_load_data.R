@@ -46,6 +46,8 @@ dfLoad <- data.table(readRDS(file.path('0_data', fileName)))
 ## Sample the dataset
 set.seed(randomSeed)
 dfSample <- dfLoad[sample(nrow(dfLoad), sampleSize)]
+dfSample$dx_pay_count <- as.integer(dfSample$dx_pay_count)
+dfSample$dy_pay_count <- as.integer(dfSample$dy_pay_count)
 
 ## Save the sample
 saveRDS(
