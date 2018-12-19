@@ -12,19 +12,20 @@ library(AppliedPredictiveModeling)
 # define the dataset
 DT <- dfSample[
   , .(
-    register_platform,
-    source,
-    tier,
-    is_us,
     dx_pay_count,
     dx_payer,
+    dx_active_days,
+    d0_session_count,
+    dx_session_count,
     dy_payer
   )
 ]
-DT[, dx_payer := as.factor(dx_payer)]
-DT[, dy_payer := as.factor(dy_payer)]
-# DT[, tier := as.integer(tier)]
-
+DT[, dy_payer := factor(dy_payer)]
+DT[, avg_sessions_per_day := dx_session_count/dx_active_days]
+DT[dx_active_days == 0, ]$avg_sessions_per_day <- 0
+# DT[, diff_avg_d0_session_count := avg_sessions_per_day - d0_session_count]
+yIndex <- which(colnames(DT) == 'dy_payer')
+setcolorder(DT, c(colnames(DT)[-yIndex], colnames(DT)[yIndex]))
 
 
 # # https://topepo.github.io/caret/visualizations.html
@@ -50,14 +51,8 @@ DT[, dy_payer := as.factor(dy_payer)]
 
 
 
-# One predictor logistic regression model
-
-# train is useless for log model, it is only for parameter tuning
-# model1 <- train(
-#   dy_payer ~ dx_pay_count, data = DT,
-#   method = 'glm', family = 'binomial'
-# )
-
+# simple logistic regression model
+set.seed(1)
 trainIndex <- createDataPartition(
   DT$dy_payer, p = 0.8, list = FALSE, times = 1
 )
@@ -65,29 +60,82 @@ DTtrain <- DT[trainIndex, ]
 DTtest <- DT[-trainIndex, ]
 
 mod1 <- glm(
-  formula = dy_payer ~ dx_pay_count, data = DTtrain,
+  formula = dy_payer ~ dx_pay_count + dx_payer, data = DTtrain,
+  family = 'binomial'
+)
+mod2 <- glm(
+  formula = dy_payer ~ ., data = DTtrain,
   family = 'binomial'
 )
 
-for(cutOff in seq(0.1, 0.9, by = 0.1)) {
-  
-  DTtest[, mod1_pred := as.factor(mod1_fit > cutOff)]
-  
+mod <- mod2
+print(summary(mod))
+DTtest[, mod1_fit := predict.glm(mod, newdata = DTtest, type = 'response')]
+
+
+# Lift chart
+liftResult <- data.frame(
+  class = factor(DTtest$dy_payer, levels = c(TRUE, FALSE)),
+  model = DTtest$mod1_fit
+)
+liftObj <- lift(class ~ model, data = liftResult)
+print(plot(liftObj, value = 80, auto.key = list(columns = 1, lines = TRUE, points = FALSE)))
+
+# ROC curve
+library(pROC)
+rocObj <- roc(
+  response = factor(DTtest$dy_payer, levels = c(TRUE, FALSE)),
+  predictor = DTtest$mod1_fit,
+  auc = TRUE
+)
+plot.roc(rocObj, print.thres = TRUE, print.auc = TRUE)
+
+# Confusion matrix for a cut off based on the ROC plot
+cutOff <- 0.013
+DTtest[, mod1_pred := factor(mod1_fit > cutOff)]
+confM <- confusionMatrix(
+  data = DTtest$mod1_pred,
+  reference = DTtest$dy_payer,
+  positive = 'TRUE'
+)
+print(cutOff)
+print(confM$table)
+print(confM$byClass[1])
+print(confM$byClass[5])
+
+
+# More plots - ROC & sensitivity vs. precision
+cutOffs <- seq(0.001, 0.05, by = 0.001)
+nCutOff <- length(cutOffs)
+TPR <- rep(0, nCutOff)
+TNR <- rep(0, nCutOff)
+FPR <- rep(0, nCutOff)
+prec <- rep(0, nCutOff)
+
+for (i in 1:nCutOff) {
+  DTtest[, mod1_pred := factor(mod1_fit > cutOffs[i])]
   confM <- confusionMatrix(
     data = DTtest$mod1_pred,
     reference = DTtest$dy_payer,
     positive = 'TRUE'
   )
-  print(confM$table)
-  print(confM$byClass[1])
-  print(confM$byClass[5])
+  TPR[i] <- confM$byClass[1]
+  TNR[i] <- confM$byClass[2]
+  FPR[i] <- 1 - TNR[i]
+  prec[i] <- confM$byClass[5]
   
 }
 
-
-liftResult <- data.frame(class = DTtest$dy_payer, model = DTtest$mod1_fit)
-liftObj <- lift(class ~ model, data = liftResult)
-plot(liftObj, value = 80, auto.key = list(columns = 1, lines = TRUE, points = FALSE))
+plot(FPR, TPR, type = 'l')
+plot(TPR, prec, type = 'l')
 
 
 
+
+# LEFTOVERS
+
+# train is useless for log model, it is only for parameter tuning
+# model1 <- train(
+#   dy_payer ~ dx_pay_count, data = DT,
+#   method = 'glm', family = 'binomial'
+# )
