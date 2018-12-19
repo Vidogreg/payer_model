@@ -22,7 +22,7 @@ packageTest('data.table')
 sampleSize <- 100000
 randomSeed <- 1
 
-fileName <- 'ga_972_payer_dataset_v0.rds'
+fileName <- 'ga_972_payer_dataset_v1.rds'
 
 ## Set working directory
 setwd(file.path(PROJECT_DIR, PROJECT))
@@ -46,8 +46,11 @@ dfLoad <- data.table(readRDS(file.path('0_data', fileName)))
 ## Sample the dataset
 set.seed(randomSeed)
 dfSample <- dfLoad[sample(nrow(dfLoad), sampleSize)]
-dfSample$dx_pay_count <- as.integer(dfSample$dx_pay_count)
-dfSample$dy_pay_count <- as.integer(dfSample$dy_pay_count)
+
+for (col in colnames(dfSample)) {
+  if(class(dfSample[[col]]) == 'integer64')
+    dfSample[[col]] <- as.integer(dfSample[[col]])
+}
 
 ## Save the sample
 saveRDS(

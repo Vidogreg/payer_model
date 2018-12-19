@@ -25,7 +25,10 @@ library(data.table)
 ## Settings
 ## --------
 
-hiveTables <- c('ga_972_payer_dataset_v0')
+hiveTables <- c(
+  'ga_972_payer_dataset_v0',
+  'ga_972_payer_dataset_v1'
+)
 
 ## ---------------------
 ## Set working directory
