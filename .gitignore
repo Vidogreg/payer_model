@@ -24,7 +24,11 @@ vignettes/*.pdf
 *.knit.md
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
+# R project file
 .Rproj.user
 payer_model.Rproj
+# data files
+*.rds
+# other
 lift_chart_pay_sessions.png
 lift_chart_only_pay.png
