@@ -8,7 +8,7 @@
 NAME <- '1_eval_baseline_model'
 PROJECT <- 'payer_model'
 PROJECT_DIR <- file.path(
-  'C:/Users/vgregor/OneDrive - PIXEL FEDERATION, s.r.o',
+  'C:/Users/vgregor/OneDrive - PXFD',
   '_PIXEL FEDERATION/GA issues/Games General/GA-972 Payer model'
 )
 
@@ -18,13 +18,13 @@ PROJECT_DIR <- file.path(
 # ------------
 ## Imports
 source('1_code/00_utils.R')
+packageTest('data.table')
+packageTest('caret')
+
 if(!exists('dfSample'))
   dfSample <- data.table(readRDS(file.path(
     '2_pipeline', '0_load_data', 'out', 'dataset_v0_sample_seed_1.rds'
   )))
-
-packageTest('data.table')
-packageTest('caret')
 
 
 ## Settings
@@ -87,6 +87,12 @@ TNR <- TN/(FP + TN)
 precision <- TP/(FP + TP)
 # confM$byClass[5]
 
+# payer count
+payers <- list(
+  prediction = sum(confM$table[2, ]),
+  reference = sum(confM$table[, 2])
+)
+payers$relDiff <- payers$prediction/payers$reference
 
 # We are mainly interested in precision and sensitivity
 # sensitivity - how many of actual payers have we identified
@@ -94,6 +100,7 @@ precision <- TP/(FP + TP)
 print(confM$table)
 print(confM$byClass[1])
 print(confM$byClass[5])
+print(payers)
 
 
 # ----------
