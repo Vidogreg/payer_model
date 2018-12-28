@@ -6,7 +6,7 @@
 NAME <- 'import_data_from_hive'
 PROJECT <- 'payer_model'
 PROJECT_DIR <- file.path(
-  'C:/Users/vgregor/OneDrive - PIXEL FEDERATION, s.r.o',
+  'C:/Users/vgregor/OneDrive - PXFD',
   '_PIXEL FEDERATION/GA issues/Games General/GA-972 Payer model'
 )
 
