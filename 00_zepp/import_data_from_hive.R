@@ -17,9 +17,11 @@ PROJECT_DIR <- file.path(
 ## -------
 ## Imports
 ## -------
+source('1_code/00_utils.R')
 
-library(DBI)
-library(data.table)
+packageTest('DBI')
+packageTest('odbc')
+packageTest('data.table')
 
 ## --------
 ## Settings
