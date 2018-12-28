@@ -26,3 +26,5 @@ vignettes/*.pdf
 rsconnect/
 .Rproj.user
 payer_model.Rproj
+lift_chart_pay_sessions.png
+lift_chart_only_pay.png
