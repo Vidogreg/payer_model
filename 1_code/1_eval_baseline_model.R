@@ -5,7 +5,8 @@
 ## Model: A player is a payer in the prediction interval (dy)
 ##        iff he is a payer in the observation period (dx)
 ## We calculate the confusion matrix, sensitivity & precision.
-## We also calculate the total count of payers (predicted and actual)
+## And also the total count of payers (predicted and actual).
+
 NAME <- '1_eval_baseline_model'
 PROJECT <- 'payer_model'
 PROJECT_DIR <- file.path(
@@ -21,14 +22,6 @@ PROJECT_DIR <- file.path(
 source('1_code/00_utils.R')
 packageTest('data.table')
 packageTest('caret')
-
-if(!exists('dfSample'))
-  dfSample <- data.table(readRDS(file.path(
-    '2_pipeline', '0_load_data', 'out', 'dataset_v0_sample_seed_1.rds'
-  )))
-
-
-## Settings
 
 ## Set working directory
 setwd(file.path(PROJECT_DIR, PROJECT))
@@ -46,6 +39,12 @@ if (!dir.exists(pipeline)) {
 # ---------
 # Main code
 # ---------
+## Load data and create DT
+if(!exists('dfSample'))
+  dfSample <- data.table(readRDS(file.path(
+    '2_pipeline', '0_load_data', 'out', 'dataset_v0_sample_seed_1.rds'
+  )))
+
 DT <- dfSample[
   , .(
     player_id,
@@ -53,14 +52,13 @@ DT <- dfSample[
     y_real = as.factor(dy_payer)
   )
 ]
-DT[, loss := as.numeric(y_pred != y_real)]
 
+## Calculate confusion matrix
 confM <- confusionMatrix(
   data = DT$y_pred,
   reference = DT$y_real,
   positive = 'TRUE'
 )
-
 TP <- confM$table['TRUE', 'TRUE']             # TP - true positive
 TN <- confM$table['FALSE', 'FALSE']           # TN - true negative
 FP <- confM$table['TRUE', 'FALSE']            # FP - false positive
