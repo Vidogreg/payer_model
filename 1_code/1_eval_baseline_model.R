@@ -4,7 +4,8 @@
 ## This file evaluates the baseline model.
 ## Model: A player is a payer in the prediction interval (dy)
 ##        iff he is a payer in the observation period (dx)
-## We calculate the confusion matrix and the important metrics: sensitivity & precision
+## We calculate the confusion matrix, sensitivity & precision.
+## We also calculate the total count of payers (predicted and actual)
 NAME <- '1_eval_baseline_model'
 PROJECT <- 'payer_model'
 PROJECT_DIR <- file.path(
@@ -36,7 +37,7 @@ setwd(file.path(PROJECT_DIR, PROJECT))
 pipeline <- file.path('2_pipeline', NAME)
 if (!dir.exists(pipeline)) {
   dir.create(pipeline)
-  for (folder in c('out', 'store', 'tmp')){
+  for (folder in c('out', 'store', 'tmp')) {
     dir.create(file.path(pipeline, folder))
   }
 }
