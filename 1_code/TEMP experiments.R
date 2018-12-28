@@ -6,7 +6,7 @@ if(!exists('dfSample'))
 
 packageTest('data.table')
 packageTest('caret')
-library(AppliedPredictiveModeling)
+# packageTest('AppliedPredictiveModeling')
 
 
 # define the dataset
@@ -88,7 +88,7 @@ rocObj <- roc(
   predictor = DTtest$mod1_fit,
   auc = TRUE
 )
-plot.roc(rocObj, print.thres = TRUE, print.auc = TRUE)
+p <- plot.roc(rocObj, print.thres = TRUE, print.auc = TRUE)
 
 # Confusion matrix for a cut off based on the ROC plot
 cutOff <- 0.013
@@ -105,29 +105,53 @@ print(confM$byClass[5])
 
 
 # More plots - ROC & sensitivity vs. precision
-cutOffs <- seq(0.001, 0.05, by = 0.001)
+# cutOffs <- seq(0.001, 0.05, by = 0.001)
+cutOffs <- rocObj$thresholds
 nCutOff <- length(cutOffs)
 TPR <- rep(0, nCutOff)
 TNR <- rep(0, nCutOff)
 FPR <- rep(0, nCutOff)
-prec <- rep(0, nCutOff)
+PPV <- rep(0, nCutOff)
+posCountRelDiff <- rep(0, nCutOff)
 
 for (i in 1:nCutOff) {
   DTtest[, mod1_pred := factor(mod1_fit > cutOffs[i])]
-  confM <- confusionMatrix(
-    data = DTtest$mod1_pred,
-    reference = DTtest$dy_payer,
-    positive = 'TRUE'
-  )
-  TPR[i] <- confM$byClass[1]
-  TNR[i] <- confM$byClass[2]
-  FPR[i] <- 1 - TNR[i]
-  prec[i] <- confM$byClass[5]
+  confM <- table(DTtest$mod1_pred, DTtest$dy_payer)
   
+  if(length(levels(DTtest$mod1_pred)) < 2) {
+    if(levels(DTtest$mod1_pred) == 'TRUE') {
+      TP <- confM[1, 2]
+      TN <- 0
+      FP <- confM[1, 1]
+      FN <- 0
+    } else {
+      TP <- 0
+      TN <- confM[1, 1]
+      FP <- 0
+      FN <- confM[1, 2]
+    }
+  } else{
+    TP <- confM[2, 2]
+    TN <- confM[1, 1]
+    FP <- confM[2, 1]
+    FN <- confM[1, 2]
+  }
+  
+  # Sensitivity = recall = hit rate = true positive rate
+  TPR[i] <- TP/(TP + FN)
+  # Specificity = selectivity = true negative rate
+  TNR[i] <- TN/(TN + FP)
+  # fallout = false positive rate
+  FPR[i] <- 1 - TNR[i]
+  # precision = positive predictive value
+  PPV[i] <- TP/(TP + FP)
+  # relative difference between count of predicted and actual positives
+  posCountRelDiff[i] <- (TP + FP)/(TP + FN)
 }
 
 plot(FPR, TPR, type = 'l')
-plot(TPR, prec, type = 'l')
+plot(TPR, PPV, type = 'l')
+plot(cutOffs, posCountRelDiff, type = 'l')
 
 
 
@@ -139,3 +163,5 @@ plot(TPR, prec, type = 'l')
 #   dy_payer ~ dx_pay_count, data = DT,
 #   method = 'glm', family = 'binomial'
 # )
+
+# https://en.wikipedia.org/wiki/Confusion_matrix
