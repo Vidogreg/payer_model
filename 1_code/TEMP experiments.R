@@ -86,9 +86,11 @@ library(pROC)
 rocObj <- roc(
   response = factor(DTtest$dy_payer, levels = c(TRUE, FALSE)),
   predictor = DTtest$mod1_fit,
-  auc = TRUE
+  auc = TRUE,
+  plot = TRUE,
+  print.thres = TRUE,
+  print.auc = TRUE
 )
-p <- plot.roc(rocObj, print.thres = TRUE, print.auc = TRUE)
 
 # Confusion matrix for a cut off based on the ROC plot
 cutOff <- 0.013
