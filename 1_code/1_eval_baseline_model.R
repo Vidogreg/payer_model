@@ -53,6 +53,7 @@ DT <- dfSample[
   )
 ]
 
+
 ## Calculate confusion matrix
 confM <- confusionMatrix(
   data = DT$y_pred,
@@ -88,18 +89,26 @@ precision <- TP/(FP + TP)
 
 # payer count
 payers <- list(
-  prediction = sum(confM$table[2, ]),
-  reference = sum(confM$table[, 2])
+  predictedCount = sum(confM$table[2, ]),
+  referenceCount = sum(confM$table[, 2])
 )
-payers$relDiff <- payers$prediction/payers$reference
+payers$relDiff <- payers$predictedCount/payers$referenceCount
 
 # We are mainly interested in precision and sensitivity
 # sensitivity - how many of actual payers have we identified
 # precision   - how many of predicted payers are actual payers
-print(confM$table)
-print(confM$byClass[1])
-print(confM$byClass[5])
-print(payers)
+
+
+## Print results in .pdf
+pdf(file.path(
+  '2_pipeline', NAME, 'out', 'baseline_model_eval_output.pdf'
+))
+printOutput(confM)
+printOutput(list(
+  confM$byClass[c(1, 5)],
+  payers
+))
+dev.off()
 
 
 # ----------

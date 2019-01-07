@@ -2,7 +2,7 @@
 # Introduction
 # ------------
 ## This file evaluates a simple logistic regression model with only payment data.
-NAME <- '2_logit_payments'
+NAME <- '3_logit_pay&session'
 PROJECT <- 'payer_model'
 PROJECT_DIR <- file.path(
   'C:/Users/vgregor/OneDrive - PXFD',
@@ -49,6 +49,9 @@ DT <- dfSample[
   , .(
     dx_pay_count,
     dx_payer,
+    dx_active_days,
+    d0_session_count,
+    dx_session_count,
     dy_payer
   )
 ]
@@ -64,7 +67,8 @@ DTtrain <- DT[trainIndex, ]
 DTtest <- DT[-trainIndex, ]
 
 mod <- glm(
-  formula = dy_payer ~ dx_pay_count + dx_payer, data = DTtrain,
+  formula = dy_payer ~ .,
+  data = DTtrain,
   family = 'binomial'
 )
 

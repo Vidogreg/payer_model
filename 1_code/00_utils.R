@@ -108,7 +108,7 @@ evalClassModel <- function(
   ### Confusion matrix for threshold based on count of positives
   cutOffPosRelDiff <-
     rocObj$thresholds[min(which(abs(posRelDiff - 1) == min(abs(posRelDiff - 1))))]
-  prediction <- factor(fit > cutOffRoc)
+  prediction <- factor(fit > cutOffPosRelDiff)
   confMatrixPosRelDiff <- confusionMatrix(
     data = prediction,
     reference = reference,
@@ -125,7 +125,10 @@ evalClassModel <- function(
   cutOffsNonInf <- cutOffs
   cutOffsNonInf[cutOffsNonInf == -Inf] <- 0
   cutOffsNonInf[cutOffsNonInf == Inf] <- 1
-  plot(cutOffsNonInf, posRelDiff, type = 'l', main = 'predicted positives / actual positives')
+  plot(
+    cutOffsNonInf, posRelDiff, type = 'l', ylim = c(0, 2),
+    main = 'predicted positives / actual positives'
+  )
   printOutput(c(
     '1st matrix - threshold based on the ROC curve',
     cutOffRoc,
@@ -139,19 +142,3 @@ evalClassModel <- function(
   # Pos Pred Value = precision
   dev.off()
 }
-
-
-
-
-
-
-
-# modelObj <- mod; reference <- DTtest$dy_payer;
-# prediction <- DTtest$mod1_pred; fit <- DTtest$mod1_fit;
-# 
-evalClassModel(
-  modelObj = mod,
-  reference = DTtest$dy_payer,
-  fit = DTtest$mod_fit,
-  filePath = file.path('2_pipeline', NAME, 'out', 'model_eval_output_' %+% randomSeed %+% '.pdf')
-)
