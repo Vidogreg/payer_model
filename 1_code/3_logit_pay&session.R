@@ -1,7 +1,7 @@
 # ------------
 # Introduction
 # ------------
-## This file evaluates a simple logistic regression model with only payment data.
+## This file evaluates a simple logistic regression model with payment & session data.
 NAME <- '3_logit_pay&session'
 PROJECT <- 'payer_model'
 PROJECT_DIR <- file.path(
@@ -19,7 +19,7 @@ packageTest('data.table')
 
 if(!exists('dfSample'))
   dfSample <- data.table(readRDS(file.path(
-    '2_pipeline', '0_load_data', 'out', 'dataset_v0_sample_seed_1.rds'
+    '2_pipeline', '0_load_data', 'out', 'dataset_v1_sample_seed_1.rds'
   )))
 
 
