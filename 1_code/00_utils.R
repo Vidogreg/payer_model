@@ -118,7 +118,7 @@ evalClassModel <- function(
   
   ### Printing
   pdf(filePath)
-  printOutput(summary(mod))
+  printOutput(summary(modelObj))
   print(plot(liftObj, value = 80, main = 'Lift chart'))
   plot.roc(rocObj, print.thres = TRUE, print.auc = TRUE, main = 'ROC curve')
   plot(TPR, PPV, type = 'l', main = 'Sensitivity vs. Precision')
