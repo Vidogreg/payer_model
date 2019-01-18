@@ -54,11 +54,18 @@ con <- DBI::dbConnect(
 
 for(hiveTable in hiveTables) {
   
+  print(paste(Sys.time(), hiveTable, 'querying...'))
   query <- paste(
     'SELECT * ', 'FROM vgregor.',
     hiveTable, sep = ''
   )
   dfLoad <- data.table(dbGetQuery(con, query))
+  
+  for (col in colnames(dfLoad)) {
+    if(class(dfLoad[[col]]) == 'integer64')
+      dfLoad[[col]] <- as.integer(dfLoad[[col]])
+  }
+  
   saveRDS(dfLoad, file = file.path('0_data', paste(hiveTable, '.rds', sep = '')))
   print(paste(Sys.time(), hiveTable, 'saved to .rds'))
   

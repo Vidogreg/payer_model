@@ -1,7 +1,7 @@
 # ------------
 # Introduction
 # ------------
-## This file loads the v0 dataset and samples a smaller dataset later work
+## This file loads the v0 dataset and samples a smaller dataset for later work
 NAME <- '0_load_data'
 PROJECT <- 'payer_model'
 PROJECT_DIR <- file.path(
@@ -21,8 +21,8 @@ packageTest('data.table')
 ## Settings
 sampleSize <- 100000
 randomSeed <- 1
-
-fileName <- 'ga_972_payer_dataset_v1.rds'
+dataVersion <- 1
+fileName <- 'ga_972_payer_dataset_v' %+% dataVersion %+% '.rds'
 
 ## Set working directory
 setwd(file.path(PROJECT_DIR, PROJECT))
@@ -47,16 +47,11 @@ dfLoad <- data.table(readRDS(file.path('0_data', fileName)))
 set.seed(randomSeed)
 dfSample <- dfLoad[sample(nrow(dfLoad), sampleSize)]
 
-for (col in colnames(dfSample)) {
-  if(class(dfSample[[col]]) == 'integer64')
-    dfSample[[col]] <- as.integer(dfSample[[col]])
-}
-
 ## Save the sample
 saveRDS(
   dfSample,
   file = file.path(
     '2_pipeline', NAME, 'out',
-    'dataset_v0_sample_seed_' %+% randomSeed %+% '.rds'
+    'dataset_v' %+% dataVersion %+% '_sample_seed_' %+% randomSeed %+% '.rds'
   )
 )
