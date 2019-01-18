@@ -61,8 +61,58 @@ set.seed(randomSeed)
 trainIndex <- createDataPartition(
   dfAll$dy_payer, p = 0.8, list = FALSE, times = 1
 )
-dfTrain <- dfAll[trainIndex, ]
+dfTrainVal <- dfAll[trainIndex, ]
 dfTest <- dfAll[-trainIndex, ]
+
+
+
+##### TEMP
+K <- 10
+data <- dfTrainVal
+k <- 1
+
+## k-fold CV
+makeCrossVal <- function(K, data) {
+  
+  foldsIndex <- createFolds(data$dy_payer, k = K)
+  
+  for(k in 1:K) {
+    
+    dfTrain <- data[-foldsIndex[[k]], ]
+    mod <- glm(
+      formula = dy_payer ~ .,
+      data = dfTrain,
+      family = 'binomial'
+    )
+    
+    dfVal <- dfAll[foldsIndex[[k]], ]
+    dfVal[, mod_fit := predict.glm(mod, newdata = dfVal, type = 'response')]
+    
+    rocObj <- roc(response = factor(dfVal$dy_payer), predictor = dfVal$mod_fit)
+    
+    cutOffOptimal <- getOptimalCutOff(
+      criterion = "relDiffPosPred",
+      ths = rocObj$thresholds,
+      fit = dfVal$mod_fit,
+      ref = dfVal$dy_payer
+    )
+    
+    # print(table(dfTrain$dy_payer))
+    # print(table(dfVal$dy_payer))
+    
+  }
+  
+}
+
+
+
+
+
+
+
+
+
+makeCrossVal(K = K, data = dfTrainVal)
 
 
 
