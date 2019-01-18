@@ -50,20 +50,11 @@ trainIndex <- createDataPartition(
   DT$dy_payer, p = 0.8, list = FALSE, times = 1
 )
 DTtrain <- DT[trainIndex, ]
-DTtrainDown <- downSample(x = DTtrain[, -ncol(DTtrain), with = F], y = DTtrain$dy_payer)
-DTtrainDown <- data.table(DTtrainDown)
-setnames(DTtrainDown, old = c("Class"), new = c("dy_payer"))
 DTtest <- DT[-trainIndex, ]
 
 mod <- glm(
   formula = dy_payer ~ .,
   data = DTtrain,
-  family = 'binomial'
-)
-
-modDown <- glm(
-  formula = dy_payer ~ .,
-  data = DTtrainDown,
   family = 'binomial'
 )
 
@@ -75,21 +66,10 @@ evalClassModel(
   reference = DTtest$dy_payer,
   fit = DTtest$mod_fit,
   filePath = file.path(
-    'TEMP_output_mod_' %+% randomSeed %+% '.pdf'
+    'TEMP_output_' %+% randomSeed %+% '.pdf'
   )
 )
 
-## Predict on test dataset
-DTtest[, mod_fit := predict.glm(modDown, newdata = DTtest, type = 'response')]
-## Evaluate the model and print the output to .pdf
-evalClassModel(
-  modelObj = modDown,
-  reference = DTtest$dy_payer,
-  fit = DTtest$mod_fit,
-  filePath = file.path(
-    'TEMP_output_modDown_' %+% randomSeed %+% '.pdf'
-  )
-)
 
 
 
