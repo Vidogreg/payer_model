@@ -43,9 +43,14 @@ makeCrossVal <- function(K, data) {
       criterion = "relDiffPosPred"
     )
     
-    if(!exists('cvResult')) {
+    if(k == 1) {
+      cvResult <- NULL
       cvResult <- data.frame(matrix(
-        c(mod$coefficients, cutOffOptimal, rep(0, (K - 1)*(mod$rank + 1))),
+        c(
+          mod$coefficients,
+          cutOffOptimal,
+          rep(0, (K - 1)*(length(mod$coefficients) + 1))
+        ),
         nrow = K, byrow = TRUE
       ))
       colnames(cvResult) <- c(names(mod$coefficients), "optimal_cutoff")
