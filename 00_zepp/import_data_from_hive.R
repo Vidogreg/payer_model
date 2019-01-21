@@ -29,7 +29,8 @@ packageTest('data.table')
 
 hiveTables <- c(
   'ga_972_payer_dataset_v0',
-  'ga_972_payer_dataset_v1'
+  'ga_972_payer_dataset_v1',
+  'ga_972_payer_dataset_v2'
 )
 
 ## ---------------------
@@ -66,6 +67,7 @@ for(hiveTable in hiveTables) {
       dfLoad[[col]] <- as.integer(dfLoad[[col]])
   }
   
+  print(paste(Sys.time(), hiveTable, 'saving to .rds'))
   saveRDS(dfLoad, file = file.path('0_data', paste(hiveTable, '.rds', sep = '')))
   print(paste(Sys.time(), hiveTable, 'saved to .rds'))
   
