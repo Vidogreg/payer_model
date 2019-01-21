@@ -54,8 +54,9 @@ dfAll <- dfLoad[source == "marketing", .(
 )]
 dfAll[, dy_payer := factor(dy_payer)]
 
-## split dataset to train and test
-## We will train and tune the model only on train dataset using CV
+
+## split dataset to train-validation and test
+## We will train and tune the model only on train-validation dataset using CV
 ## test dataset will be used only in the end
 set.seed(randomSeed)
 trainIndex <- createDataPartition(
@@ -65,83 +66,56 @@ dfTrainVal <- dfAll[trainIndex, ]
 dfTest <- dfAll[-trainIndex, ]
 
 
-
-##### TEMP
+## Run cross-validation on train-validation dataset
 K <- 10
-data <- dfTrainVal
-k <- 1
-
-## k-fold CV
-makeCrossVal <- function(K, data) {
-  
-  foldsIndex <- createFolds(data$dy_payer, k = K)
-  
-  for(k in 1:K) {
-    
-    dfTrain <- data[-foldsIndex[[k]], ]
-    mod <- glm(
-      formula = dy_payer ~ .,
-      data = dfTrain,
-      family = 'binomial'
-    )
-    
-    dfVal <- dfAll[foldsIndex[[k]], ]
-    dfVal[, mod_fit := predict.glm(mod, newdata = dfVal, type = 'response')]
-    
-    rocObj <- roc(response = factor(dfVal$dy_payer), predictor = dfVal$mod_fit)
-    
-    cutOffOptimal <- getOptimalCutOff(
-      criterion = "relDiffPosPred",
-      ths = rocObj$thresholds,
-      fit = dfVal$mod_fit,
-      ref = dfVal$dy_payer
-    )
-    
-    # print(table(dfTrain$dy_payer))
-    # print(table(dfVal$dy_payer))
-    
-  }
-  
-}
+cvResult <- makeCrossVal(K = K, data = dfTrainVal)
+optimalCutOff <- mean(cvResult$optimal_cutoff)
 
 
-
-
-
-
-
-
-
-makeCrossVal(K = K, data = dfTrainVal)
-
-
-
-
-
-
-
-
-
-
-
-
-mod <- glm(
+## Train model on full train-val dataset
+modTrainVal <- glm(
   formula = dy_payer ~ .,
-  data = dfAll,
+  data = dfTrainVal,
   family = 'binomial'
 )
-
-summary(mod)
-dfAll[, mod_fit := predict.glm(mod, newdata = dfAll, type = 'response')]
-
-rocObj <- roc(response = factor(dfAll$dy_payer), predictor = dfAll$mod_fit)
-plot.roc(rocObj, print.thres = TRUE, print.auc = TRUE, main = 'ROC curve')
-print(rocObj$auc)
+dfTest[, mod_fit := predict.glm(modTrainVal, newdata = dfTest, type = 'response')]
 
 
+## print results to .pdf
+filePath <- file.path(
+  '2_pipeline', NAME, 'out', 'model_CV_output_' %+% randomSeed %+% '.pdf'
+)
+pdf(filePath)
+### Vizualize results of CV
+vioplot(
+  cvResult$`(Intercept)`,
+  cvResult$tier,
+  cvResult$dx_pay_count,
+  cvResult$dx_payerTRUE,
+  cvResult$dx_active_days,
+  cvResult$d0_session_count,
+  cvResult$dx_session_count,
+  cvResult$optimal_cutoff
+)
+hist(cvResult$optimal_cutoff, prob = TRUE)
+lines(density(cvResult$optimal_cutoff))
+### Print confusion table with optimal cut-off
+printOutput(list(optimalCutOff = optimalCutOff))
+reference <- dfTest$dy_payer
+prediction <- factor(dfTest$mod_fit > optimalCutOff)
+printOutput(table(prediction, reference))
+dev.off()
 
 
-
+## Evaluate the model and print the output to .pdf
+evalClassModel(
+  modelObj = modTrainVal,
+  reference = dfTest$dy_payer,
+  fit = dfTest$mod_fit,
+  filePath = file.path(
+    '2_pipeline', NAME, 'out', 'model_eval_output_' %+% randomSeed %+% '.pdf'
+  )
+)
 
 
 
