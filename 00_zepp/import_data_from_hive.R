@@ -30,7 +30,8 @@ packageTest('data.table')
 hiveTables <- c(
   'ga_972_payer_dataset_v0',
   'ga_972_payer_dataset_v1',
-  'ga_972_payer_dataset_v2'
+  'ga_972_payer_dataset_v2',
+  'ga_972_payer_dataset_v3'
 )
 
 ## ---------------------
@@ -47,7 +48,7 @@ con <- DBI::dbConnect(
   odbc::odbc(),
   Driver = 'MapR Hive ODBC Connector',
   Host = 'dwh-prod-mapr-master-02',
-  Schema = 'default',
+  Schema = 'vgregor',
   UID = 'mapr',
   PWD = 'mapr',
   Port = 10000

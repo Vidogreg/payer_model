@@ -23,7 +23,7 @@ printOutput <- function(output, cex = 0.7) {
 
 
 ## k-fold CV with optimal cutoff
-makeCrossVal <- function(K, data) {
+makeCrossValCutOff <- function(K, data) {
   foldsIndex <- createFolds(data$dy_payer, k = K)
   
   for(k in 1:K) {

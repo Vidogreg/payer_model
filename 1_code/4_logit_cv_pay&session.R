@@ -68,7 +68,7 @@ dfTest <- dfAll[-trainIndex, ]
 
 ## Run cross-validation on train-validation dataset
 K <- 10
-cvResult <- makeCrossVal(K = K, data = dfTrainVal)
+cvResult <- makeCrossValCutOff(K = K, data = dfTrainVal)
 optimalCutOff <- mean(cvResult$optimal_cutoff)
 
 

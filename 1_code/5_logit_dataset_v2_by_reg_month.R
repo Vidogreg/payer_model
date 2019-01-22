@@ -20,7 +20,7 @@ packageTest('ggplot2')
 
 if(!exists('dfLoad'))
   dfLoad <- data.table(readRDS(file.path(
-    '0_data', 'ga_972_payer_dataset_v2.rds'
+    '0_data', 'ga_972_payer_dataset_v3.rds'
   )))
 
 ## Settings & working directory
@@ -64,12 +64,12 @@ for(i in 1:length(regMonths)) {
   ## Run cross-validation
   K <- 6
   cvResult <- NULL
-  cvResult <- makeCrossVal(K = K, data = dfAll)
+  cvResult <- makeCrossValCutOff(K = K, data = dfAll)
   cvResult$register_month <- regMonth
   cvResult$fold <- 1:K
   ## Save it to list
   cvResultList[[i]] <- cvResult
-  print('register month' %+% regMonth %+% ' finished')
+  print('register month ' %+% regMonth %+% ' finished')
 }
 result <- rbindlist(cvResultList)
 
