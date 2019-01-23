@@ -30,7 +30,7 @@ makeCrossValCutOff <- function(K, data) {
       family = 'binomial'
     )
     
-    dfVal <- dfAll[foldsIndex[[k]], ]
+    dfVal <- data[foldsIndex[[k]], ]
     dfVal[, mod_fit := predict.glm(mod, newdata = dfVal, type = 'response')]
     
     cutOffOptimal <- getOptimalCutOff(

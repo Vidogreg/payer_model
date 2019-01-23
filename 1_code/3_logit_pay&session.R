@@ -19,7 +19,7 @@ packageTest('data.table')
 
 if(!exists('dfSample'))
   dfSample <- data.table(readRDS(file.path(
-    '2_pipeline', '0_load_data', 'out', 'dataset_v1_sample_seed_1.rds'
+    '2_pipeline', '0_sample_data', 'out', 'dataset_v1_sample_seed_1.rds'
   )))
 
 

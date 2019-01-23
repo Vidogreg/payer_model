@@ -2,7 +2,7 @@
 # Introduction
 # ------------
 ## This file loads the v0 dataset and samples a smaller dataset for later work
-NAME <- '0_load_data'
+NAME <- '0_sample_data'
 # PROJECT <- 'payer_model'
 # PROJECT_DIR <- file.path(
 #   'C:/Users/vgregor/OneDrive - PXFD',
@@ -19,8 +19,8 @@ packageTest('data.table')
 
 ## Settings
 sampleSize <- 100000
-randomSeed <- 1
-dataVersion <- 1
+randomSeed <- 1024
+dataVersion <- 2
 fileName <- 'ga_972_payer_dataset_v' %+% dataVersion %+% '.rds'
 
 ## Set working directory
@@ -30,7 +30,7 @@ setwd(file.path(PROJECT_DIR, PROJECT))
 pipeline <- file.path('2_pipeline', NAME)
 if (!dir.exists(pipeline)) {
   dir.create(pipeline)
-  for (folder in c('out', 'store', 'tmp')){
+  for (folder in c('out')){
     dir.create(file.path(pipeline, folder))
   }
 }
