@@ -3,11 +3,11 @@
 # ------------
 ## This file evaluates a logistic model with payment&session data with CV.
 NAME <- '4_logit_cv_pay&session'
-PROJECT <- 'payer_model'
-PROJECT_DIR <- file.path(
-  'C:/Users/vgregor/OneDrive - PXFD',
-  '_PIXEL FEDERATION/GA issues/Games General/GA-972 Payer model'
-)
+# PROJECT <- 'payer_model'
+# PROJECT_DIR <- file.path(
+#   'C:/Users/vgregor/OneDrive - PXFD',
+#   '_PIXEL FEDERATION/GA issues/Games General/GA-972 Payer model'
+# )
 
 
 # ------------

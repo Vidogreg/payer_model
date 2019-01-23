@@ -3,11 +3,11 @@
 # ------------
 ## This file trains logistic model with payment&session data for several register months.
 NAME <- '6_logit_v3_mkt_check'
-PROJECT <- 'payer_model'
-PROJECT_DIR <- file.path(
-  'C:/Users/vgregor/OneDrive - PXFD',
-  '_PIXEL FEDERATION/GA issues/Games General/GA-972 Payer model'
-)
+# PROJECT <- 'payer_model'
+# PROJECT_DIR <- file.path(
+#   'C:/Users/vgregor/OneDrive - PXFD',
+#   '_PIXEL FEDERATION/GA issues/Games General/GA-972 Payer model'
+# )
 
 
 # ------------
@@ -21,13 +21,13 @@ packageTest('data.table')
 
 if(!exists('dfLoad'))
   dfLoad <- data.table(readRDS(file.path(
-    '0_data', 'ga_972_payer_dataset_v2.rds'
+    '0_data', 'ga_972_payer_dataset_v3.rds'
   )))
 
 ## Settings & working directory
 setwd(file.path(PROJECT_DIR, PROJECT))
 randomSeed <- 1024
-resultTableName <- 'ga_972_payer_prediction_v2'
+resultTableName <- 'ga_972_payer_prediction_v3'
 
 con <- DBI::dbConnect(
   odbc::odbc(),
@@ -52,7 +52,7 @@ if (!dir.exists(pipeline)) {
 # ---------
 ## Define and transform dataset
 dfAll <- dfLoad[
-  source == "marketing",
+  source == "marketing" & register_platform == "google play",
   .(
     player_id,
     register_month,
