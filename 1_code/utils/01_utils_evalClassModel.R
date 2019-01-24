@@ -1,8 +1,4 @@
 ## Function for printing the summary of a model into .pdf
-packageTest('data.table')
-packageTest('caret')
-packageTest('pROC')
-
 evalClassModel <- function(
   modelObj, reference, fit, filePath,
   liftChart = TRUE, rocCurve = TRUE

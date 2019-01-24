@@ -20,3 +20,8 @@ printOutput <- function(output, cex = 0.7) {
   text(0, 1, paste(tmp, collapse='\n'), adj = c(0,1), family = 'mono', cex = cex)
   box()
 }
+
+
+packageTest('data.table')
+packageTest('caret')
+packageTest('pROC')
