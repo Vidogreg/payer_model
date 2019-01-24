@@ -65,54 +65,53 @@ dat <- dfSample[, .(
 
 
 
-
-
-
-## experiments with visualizations
-datDown <- data.table(downSample(x = dat[, -ncol(dat), with = F], y = dat$dy_payer))
+## downsample the dataset for visualization purposes
+datDown <- data.table(
+  downSample(x = dat[, -ncol(dat), with = F], y = dat$dy_payer)
+)
 setnames(datDown, old = c('Class'), new = c('dy_payer'))
+set.seed(randomSeed)
+datDown2 <- datDown[sample(nrow(datDown), 1000)]
 
-datDown <- datDown[sample(nrow(datDown), 200)]
+## payment-related variables
+X <- datDown2[, 1:3]
+y <- datDown2$dy_payer
+densityFeaturePlot(X, y, layout = c(2, 2))
+boxFeaturePlot(X, y, layout = c(2, 2))
+### Hard to see anything in the plots since there are few distinct values
+#### and all medians are the same.
+### It is still clear that payment variables are all relevant.
 
-library(AppliedPredictiveModeling)
 
-transparentTheme(trans = .4)
-featurePlot(
-  x = datDown[, 4:7, with = F],
-  y = datDown$dy_payer,
-  plot = 'ellipse',
-  auto.key = list(columns = 2)
+## session-related variables
+X <- datDown2[, 4:7]
+y <- datDown2$dy_payer
+densityFeaturePlot(X, y, layout = c(2, 2))
+boxFeaturePlot(X, y, layout = c(2, 2))
+### All session variables seem relevant
+### The most obvious is dx_active_days
+### d0_session_count seems the least relevant
+
+
+
+
+
+
+
+
+
+
+
+## Selection by filter
+filterCtrl <- sbfControl(functions = rfSBF, method = "repeatedcv", repeats = 5)
+set.seed(randomSeed)
+rfWithFilter <- sbf(
+  datDown[, -ncol(datDown), with = F],
+  datDown$dy_payer,
+  sbfControl = filterCtrl
 )
-
-transparentTheme(trans = .9)
-featurePlot(
-  x = datDown[, 4:7],
-  y = datDown$dy_payer,
-  plot = "density",
-  ## Pass in options to xyplot() to
-  ## make it prettier
-  scales = list(
-    x = list(relation="free"),
-    y = list(relation="free")
-  ),
-  adjust = 1.5,
-  pch = "|",
-  layout = c(4, 1),
-  auto.key = list(columns = 2)
-)
-
-featurePlot(
-  x = datDown[, 4:7],
-  y = datDown$dy_payer,
-  plot = "box",
-  ## Pass in options to bwplot()
-  scales = list(
-    y = list(relation="free"),
-    x = list(rot = 90)
-  ),
-  layout = c(4,1 ),
-  auto.key = list(columns = 2)
-)
+print(rfWithFilter)
+## All 7 variables were selected.
 
 
 
@@ -124,30 +123,22 @@ featurePlot(
 
 
 
-## Function that calculates AUC using CV
-calcCvAuc <- function(dat, K) {
-  foldsIndex <- createFolds(dat$dy_payer, k = K)
-  result <- list()
-  for(k in 1:K) {
-    ## train model
-    dfTrain <- dat[-foldsIndex[[k]], ]
-    mod <- glm(
-      formula = dy_payer ~ .,
-      data = dfTrain,
-      family = 'binomial'
-    )
-    ## predict on test data
-    dfTest <- dat[foldsIndex[[k]], ]
-    dfTest[, mod_fit := predict.glm(mod, newdata = dfTest, type = 'response')]
-    ## calculate AUC on test predictions
-    auc <- auc(
-      response = factor(dfTest$dy_payer),
-      predictor = dfTest$mod_fit
-    )
-    ## write results
-    result[[k]] <- auc
-    print('Fold ' %+% k %+% '/' %+% K %+% ' done')
-  }
-  unlist(result)
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
