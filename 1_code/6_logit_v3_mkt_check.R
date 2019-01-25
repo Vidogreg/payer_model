@@ -15,8 +15,8 @@ NAME <- '6_logit_v3_mkt_check'
 # ------------
 ## Imports
 source('1_code/00_utils.R')
-packageTest('DBI')
-packageTest('odbc')
+# packageTest('DBI')
+# packageTest('odbc')
 packageTest('data.table')
 
 if(!exists('dfLoad'))
@@ -29,15 +29,15 @@ setwd(file.path(PROJECT_DIR, PROJECT))
 randomSeed <- 1024
 resultTableName <- 'ga_972_payer_prediction_v3'
 
-con <- DBI::dbConnect(
-  odbc::odbc(),
-  Driver = 'MapR Hive ODBC Connector',
-  Host = 'dwh-prod-mapr-master-02',
-  Schema = 'vgregor',
-  UID = 'mapr',
-  PWD = 'mapr',
-  Port = 10000
-)
+# con <- DBI::dbConnect(
+#   odbc::odbc(),
+#   Driver = 'MapR Hive ODBC Connector',
+#   Host = 'dwh-prod-mapr-master-02',
+#   Schema = 'vgregor',
+#   UID = 'mapr',
+#   PWD = 'mapr',
+#   Port = 10000
+# )
 
 ## Set  up pipeline folder if missing
 pipeline <- file.path('2_pipeline', NAME)
@@ -109,7 +109,6 @@ fwrite(
     '2_pipeline', NAME, 'out', resultTableName %+% '.csv'
   )
 )
-
 
 # print('Writing results to hive')
 # DBI::dbSendQuery(con, 'drop table if exists ' %+% resultTableName)

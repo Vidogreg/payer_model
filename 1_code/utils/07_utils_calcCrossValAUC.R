@@ -47,8 +47,8 @@ calcCvAucCombinations <- function(combs, dat, cvK) {
     cvAuc <- calcCvAuc(datDownSubset, cvK, FALSE)
     combResult[[i]] <- c(
       paste(
-        sort(colnames(dat[, c(varsSubset), with = F])),
-        collapse = ' + '
+        strtrim(sort(colnames(dat[, c(varsSubset), with = F])), 16),
+        collapse = '+'
       ),
       signif(summary(cvAuc), 4)
     )
