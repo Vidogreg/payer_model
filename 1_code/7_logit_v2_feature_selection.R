@@ -258,7 +258,11 @@ plot(
   main = 'ROC curve of simplified model (4 variables)'
 )
 printOutput(c(
-  'I will choose the simplified model with 4 variables for now.',
+  'I will choose the simplified model with 4 variables for now:',
+  ' - tier',
+  ' - dx_pay_count',
+  ' - dx_active_days',
+  ' - d0_session_count',
   'The difference in AUC is insignificant compared to full v2 model.',
   'For more detailed comments, see code:',
   ' -> ' %+% NAME,
