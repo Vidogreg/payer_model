@@ -54,7 +54,7 @@ con <- DBI::dbConnect(
 )
 for(hiveTable in hiveTables) {
   if(any(hiveTable %+% '.rds' == list.files('0_data'))){
-    print(paste(Sys.time(), hiveTable, 'is already downloaded... skipped'))
+    print(paste(Sys.time(), hiveTable, 'is already downloaded... skip'))
   } else {
     print(paste(Sys.time(), hiveTable, 'querying...'))
     query <- paste(
@@ -62,20 +62,19 @@ for(hiveTable in hiveTables) {
       hiveTable, sep = ''
     )
     dfLoad <- data.table(dbGetQuery(con, query))
-    
     for (col in colnames(dfLoad)) {
       if(class(dfLoad[[col]]) == 'integer64')
         dfLoad[[col]] <- as.integer(dfLoad[[col]])
     }
-    
     print(paste(Sys.time(), hiveTable, 'saving to .rds'))
     saveRDS(dfLoad, file = file.path('0_data', paste(hiveTable, '.rds', sep = '')))
     print(paste(Sys.time(), hiveTable, 'saved to .rds'))
   }
 }
+dbDisconnect(con)
 
 # Load from hive (new cluster)
-con <- DBI::dbConnect(
+con2 <- DBI::dbConnect(
   odbc::odbc(),
   dsn = 'dwh-prod-ht-hive',
   schema = 'vgregor'
@@ -89,13 +88,17 @@ for(hiveTable in hiveTablesNew) {
       'SELECT * ', 'FROM vgregor.',
       hiveTable, sep = ''
     )
-    dfLoad <- data.table(dbGetQuery(con, query))
-    
+    dfLoad <- data.table(dbGetQuery(con2, query))
+    colnames(dfLoad) <- gsub('.*\\.', '', colnames(dfLoad))
+    if(grepl('_v4', hiveTable)) {
+      dfLoad[, register_time := NULL]
+      dfLoad[, pay_count := NULL]
+      dfLoad[, session_count := NULL]
+    }
     for (col in colnames(dfLoad)) {
       if(class(dfLoad[[col]]) == 'integer64')
         dfLoad[[col]] <- as.integer(dfLoad[[col]])
     }
-    
     print(paste(Sys.time(), hiveTable, 'saving to .rds'))
     saveRDS(dfLoad, file = file.path('0_data', paste(hiveTable, '.rds', sep = '')))
     print(paste(Sys.time(), hiveTable, 'saved to .rds'))
