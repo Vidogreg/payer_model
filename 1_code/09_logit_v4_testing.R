@@ -157,4 +157,5 @@ for(dig in 0:7) {
   plot(rocObj1, col = 'red', main = 'days in game = ' %+% dig)
   plot(rocObj2, col = 'gray', add = TRUE)
 }
+printOutput('We will keep d0_session_count in all models for simplicity')
 dev.off()
