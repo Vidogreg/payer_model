@@ -6,13 +6,7 @@
 ##        iff he is a payer in the observation period (dx)
 ## We calculate the confusion matrix, sensitivity & precision.
 ## And also the total count of payers (predicted and actual).
-
-NAME <- '1_eval_baseline_model'
-# PROJECT <- 'payer_model'
-# PROJECT_DIR <- file.path(
-#   'C:/Users/vgregor/OneDrive - PXFD',
-#   '_PIXEL FEDERATION/GA issues/Games General/GA-972 Payer model'
-# )
+NAME <- '01_eval_baseline_model'
 
 
 # ------------

@@ -2,12 +2,7 @@
 # Introduction
 # ------------
 ## This file evaluates a simple logistic regression model with only payment data.
-NAME <- '2_logit_payments'
-# PROJECT <- 'payer_model'
-# PROJECT_DIR <- file.path(
-#   'C:/Users/vgregor/OneDrive - PXFD',
-#   '_PIXEL FEDERATION/GA issues/Games General/GA-972 Payer model'
-# )
+NAME <- '02_logit_payments'
 
 
 # ------------

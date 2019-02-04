@@ -2,12 +2,7 @@
 # Introduction
 # ------------
 ## This file trains logistic model with payment&session data for several register months.
-NAME <- '5_logit_dataset_v2_by_reg_month'
-# PROJECT <- 'payer_model'
-# PROJECT_DIR <- file.path(
-#   'C:/Users/vgregor/OneDrive - PXFD',
-#   '_PIXEL FEDERATION/GA issues/Games General/GA-972 Payer model'
-# )
+NAME <- '05_logit_dataset_v2_by_reg_month'
 
 
 # ------------

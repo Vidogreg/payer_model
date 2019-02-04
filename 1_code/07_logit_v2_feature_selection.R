@@ -2,7 +2,7 @@
 # Introduction
 # ------------
 ## The goal here is to simplify the logistic model with dataset v2 by feature selection.
-NAME <- '7_logit_v2_feature_selection'
+NAME <- '07_logit_v2_feature_selection'
 
 
 # ------------

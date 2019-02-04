@@ -2,12 +2,7 @@
 # Introduction
 # ------------
 ## This file loads the v0 dataset and samples a smaller dataset for later work
-NAME <- '0_sample_data'
-# PROJECT <- 'payer_model'
-# PROJECT_DIR <- file.path(
-#   'C:/Users/vgregor/OneDrive - PXFD',
-#   '_PIXEL FEDERATION/GA issues/Games General/GA-972 Payer model'
-# )
+NAME <- '00_sample_data'
 
 
 # ------------
